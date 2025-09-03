@@ -1,6 +1,23 @@
 package HxCore
 
-import "strings"
+import (
+	"context"
+	"database/sql"
+	"log"
+	"strings"
+	"time"
+)
+
+var pool *sql.DB // Database connection pool.
+
+func DbPing(ctx context.Context) {
+	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
+	defer cancel()
+
+	if err := pool.PingContext(ctx); err != nil {
+		log.Fatalf("unable to connect to database: %v", err)
+	}
+}
 
 type HxDbProviderType string
 

@@ -1,10 +1,22 @@
 package HxCore
 
 import (
-// "context"
-// "github.com/jmoiron/sqlx"
-// "strings"
+	// "context"
+	// "github.com/jmoiron/sqlx"
+	// "strings"
+	"fmt"
 )
+
+func CreateHxDb(provider HxDbProviderType) (IHxDb, error) {
+	switch provider {
+	case Oracle:
+		return &HxDbOracle{}, nil // HxDbOracle 구조체 인스턴스 생성
+	case MSSQL, MySQL, MariaDB, PostgreSQL, SQLite:
+		return nil, fmt.Errorf("'%s' 드라이버는 아직 구현되지 않았습니다", provider)
+	default:
+		return nil, fmt.Errorf("알 수 없는 DB Provider: %s", provider)
+	}
+}
 
 /*
 func GetConnectionString(userId string, password string, database string) string {

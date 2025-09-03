@@ -9,9 +9,9 @@ import (
 
 //import "reflect"
 
-//#region HxResponseResult
+//#region HxResultValue
 
-type HxResponseResult struct {
+type HxResultValue struct {
 	ResultType HxResultType `json:"ResultType"`
 	Value      any          `json:"Value"`
 	ValueType  string       `json:"ValueType"`
@@ -20,8 +20,8 @@ type HxResponseResult struct {
 	Remark     string       `json:"Remark"`
 }
 
-func CreateHxResponseResult(resultType HxResultType, value any, message string, remark string) HxResponseResult {
-	result := HxResponseResult{
+func CreateHxResponseResult(resultType HxResultType, value any, message string, remark string) HxResultValue {
+	result := HxResultValue{
 		ResultType: resultType,
 		Value:      value,
 		Message:    message,
@@ -33,28 +33,28 @@ func CreateHxResponseResult(resultType HxResultType, value any, message string, 
 }
 
 // 옵션 함수의 타입을 정의
-type ResultOption func(*HxResponseResult)
+type ResultOption func(*HxResultValue)
 
 // 각 옵션을 설정하는 ResultOption 타입을 반환
 func WithValue(value any) ResultOption {
-	return func(r *HxResponseResult) {
+	return func(r *HxResultValue) {
 		r.Value = value
 	}
 }
 
 func WithMessage(message string) ResultOption {
-	return func(r *HxResponseResult) {
+	return func(r *HxResultValue) {
 		r.Message = message
 	}
 }
 
 func WithOptionString(remark string) ResultOption {
-	return func(r *HxResponseResult) {
+	return func(r *HxResultValue) {
 		r.Remark = remark
 	}
 }
 
-func (r *HxResponseResult) TypeEx() string {
+func (r *HxResultValue) TypeEx() string {
 	// Value가 nil이면 0을 반환
 	if r.Value == nil {
 		return ""
@@ -67,7 +67,7 @@ func (r *HxResponseResult) TypeEx() string {
 
 }
 
-func (r HxResponseResult) CountEx() int {
+func (r HxResultValue) CountEx() int {
 	// Value가 nil이면 0을 반환
 	if r.Value == nil {
 		return 0
@@ -92,7 +92,7 @@ func (r HxResponseResult) CountEx() int {
 
 /*
 // ResponseResult를 생성하는 함수
-func CreateResponseResult(resultType HxResultType, resultValue any, resultMessage string, resultRemark string) HxResponseResult {
+func CreateResponseResult(resultType HxResultType, resultValue any, resultMessage string, resultRemark string) HxResultValue {
 	var count int = -1
 	var valType reflect.TypeEx
 	if resultValue != nil {
@@ -111,7 +111,7 @@ func CreateResponseResult(resultType HxResultType, resultValue any, resultMessag
 		}
 	}
 
-	Result := HxResponseResult{
+	Result := HxResultValue{
 		ResultType: resultType,
 		Value:      resultValue,
 		ValueCount: -1,
@@ -123,7 +123,7 @@ func CreateResponseResult(resultType HxResultType, resultValue any, resultMessag
 	return Result
 }*/
 
-func (res *HxResponseResult) ToJsonResponseWriterEx(w http.ResponseWriter) bool {
+func (res *HxResultValue) ToJsonResponseWriterEx(w http.ResponseWriter) bool {
 
 	if res.ValueCount > -1 {
 		res.ValueCount = res.CountEx()
@@ -147,7 +147,7 @@ func (res *HxResponseResult) ToJsonResponseWriterEx(w http.ResponseWriter) bool 
 		return true
 	}
 }
-func (res *HxResponseResult) ToJsonStringEx() (string, error) {
+func (res *HxResultValue) ToJsonStringEx() (string, error) {
 	jsonDataBytes, err := res.ToJsonBytesEx()
 
 	if err != nil {
@@ -158,7 +158,7 @@ func (res *HxResponseResult) ToJsonStringEx() (string, error) {
 	return jsonString, err
 }
 
-func (res *HxResponseResult) ToJsonBytesEx() ([]byte, error) {
+func (res *HxResultValue) ToJsonBytesEx() ([]byte, error) {
 	jsonDataBytes, err := json.Marshal(res)
 	if err != nil {
 		log.Fatalf("JSON 마샬링 에러: %v", err)
@@ -168,9 +168,9 @@ func (res *HxResponseResult) ToJsonBytesEx() ([]byte, error) {
 }
 
 /*
-func CreateResponseResult2(resultType HxResultType, options ...ResultOption) HxResponseResult {
+func CreateResponseResult2(resultType HxResultType, options ...ResultOption) HxResultValue {
 	// 기본값을 가진 ResponseResult를 먼저 생성합니다.
-	var res HxResponseResult = CreateResponseResult(resultType, nil, "", "")
+	var res HxResultValue = CreateResponseResult(resultType, nil, "", "")
 
 	// 받아온 옵션들을 순서대로 적용합니다.
 	for _, opt := range options {
@@ -179,4 +179,4 @@ func CreateResponseResult2(resultType HxResultType, options ...ResultOption) HxR
 	return res
 }
 */
-//#endregion HxResponseResult
+//#endregion HxResultValue
