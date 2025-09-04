@@ -1,4 +1,4 @@
-module github.com/typesw/hxcore.go
+module github.com/typesw/HxCore.go
 
 go 1.23.4
 
