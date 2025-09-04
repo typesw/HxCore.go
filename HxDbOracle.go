@@ -40,7 +40,7 @@ func (h *HxDbOracle) Connect(userID string, password string, database string) (c
 	}
 	connectString := GetConnectionDataSourceString(Oracle, database)
 	// Oracle DSN(Data Source Name) 생성
-	dsn := fmt.Sprintf(`user="%s" password="%s" connectString="%s"`, userID, password, connectString)
+	dsn := fmt.Sprintf(`user="%s" password="%s" connectString="%s"`, userID, password, database)
 
 	db, err := sqlx.Connect("godror", dsn)
 	if err != nil {
