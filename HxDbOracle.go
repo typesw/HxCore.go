@@ -4,10 +4,11 @@ import (
 	"context"
 	//"database/sql"
 	"fmt"
-	_ "github.com/godror/godror" // Oracle 드라이버 (블랭크 임포트)
-	"github.com/jmoiron/sqlx"
 	"log"
 	"strings"
+
+	_ "github.com/godror/godror" // Oracle 드라이버 (블랭크 임포트)
+	"github.com/jmoiron/sqlx"
 )
 
 /**
@@ -33,7 +34,7 @@ func (h *HxDbOracle) SetDebugMode(debug bool) {
 func (h *HxDbOracle) Connect(userID string, password string, database string) (context.Context, error) {
 	if h.db != nil {
 		if h.isDebug {
-			log.Println("이미 DB에 연결되어 있습니다.")
+			fmt.Println("이미 DB에 연결되어 있습니다.")
 		}
 		return context.Background(), nil
 	}
@@ -49,7 +50,7 @@ func (h *HxDbOracle) Connect(userID string, password string, database string) (c
 	h.db = db
 	h.cursor = -1 // 커서 초기화
 	if h.isDebug {
-		log.Println("Oracle DB에 성공적으로 연결되었습니다.")
+		fmt.Println("Oracle DB에 성공적으로 연결되었습니다.")
 	}
 
 	return context.Background(), nil
