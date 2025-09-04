@@ -18,6 +18,10 @@ func CreateHxDb(provider HxDbProviderType) (IHxDb, error) {
 	}
 }
 
+func NewHxDb(provider HxDbProviderType) (IHxDb, error) {
+	return CreateHxDb(provider)
+}
+
 /*
 func GetConnectionString(userId string, password string, database string) string {
 

@@ -38,7 +38,7 @@ func (h *HxDbOracle) Connect(userID string, password string, database string) (c
 		}
 		return context.Background(), nil
 	}
-	connectString := GetConnectionDataSourceString(Oracle, database)
+	//connectString := GetConnectionDataSourceString(Oracle, database)
 	// Oracle DSN(Data Source Name) 생성
 	dsn := fmt.Sprintf(`user="%s" password="%s" connectString="%s"`, userID, password, database)
 
