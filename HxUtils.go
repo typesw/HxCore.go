@@ -37,7 +37,7 @@ func IsRegexpMatch(pattern string, str string) bool {
 	return r.MatchString(str)
 }
 
-func RegexpMatch(pattern string, str string) map[int]string {
+func GetRegexpMatch(pattern string, str string) map[int]string {
 	regex, _ := regexp.Compile(pattern)
 	match := regex.FindStringSubmatch(str)
 

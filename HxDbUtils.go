@@ -92,7 +92,7 @@ func GetConnectionDataSourceString(providerType HxDbProviderType, database strin
 	Result := ""
 	var defaultPort int = HxDbProviderDefaultPort[providerType]
 	var strPattern string = `^([0-9a-zA-Z\.\-_]{1,})+(([:,]{1,1})([0-9]{1,5}))?([\/]{1,1}([0-9a-zA-Z\.\-_]{1,}))$`
-	match := RegexpMatch(strPattern, database)
+	match := GetRegexpMatch(strPattern, database)
 	if match != nil && len(match) > 1 {
 		strDbHost := match[1]
 		//strDbPortDelimiter := match[2]

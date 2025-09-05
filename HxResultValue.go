@@ -12,9 +12,9 @@ import (
 //#region HxResultValue
 
 type HxResultValue struct {
-	ResultType HxResultType `json:"ResultType"`
-	Value      any          `json:"Value"`
-	ValueType  string       `json:"ValueType"`
+	ResultType HxResultType `json:"resultType"`
+	Value      any          `json:"value"`
+	ValueType  string       `json:"value_type"`
 	ValueCount int          `json:"ValueCount"`
 	Message    string       `json:"Message"`
 	Remark     string       `json:"Remark"`
@@ -66,8 +66,12 @@ func (r *HxResultValue) TypeEx() string {
 
 	// reflect 패키지를 사용해 Value의 실제 타입을 알아냄
 	val := reflect.ValueOf(r.Value)
-
-	return val.Kind().String()
+	Result := val.Kind().String()
+	switch Result {
+	case "slice":
+		Result = "array"
+	}
+	return Result
 
 }
 
@@ -127,7 +131,7 @@ func CreateResponseResult(resultType HxResultType, resultValue any, resultMessag
 	return Result
 }*/
 
-func (res *HxResultValue) ToJsonResponseWriterEx(w http.ResponseWriter) bool {
+func (res *HxResultValue) ToJsonResponseWriter(w http.ResponseWriter) bool {
 
 	if res.ValueCount > -1 {
 		res.ValueCount = res.CountEx()
@@ -151,8 +155,8 @@ func (res *HxResultValue) ToJsonResponseWriterEx(w http.ResponseWriter) bool {
 		return true
 	}
 }
-func (res *HxResultValue) ToJsonStringEx() (string, error) {
-	jsonDataBytes, err := res.ToJsonBytesEx()
+func (res *HxResultValue) ToJsonString() (string, error) {
+	jsonDataBytes, err := res.ToJsonBytes()
 
 	if err != nil {
 		log.Fatalf("JSON 마샬링 에러: %v", err)
@@ -162,13 +166,45 @@ func (res *HxResultValue) ToJsonStringEx() (string, error) {
 	return jsonString, err
 }
 
-func (res *HxResultValue) ToJsonBytesEx() ([]byte, error) {
-	jsonDataBytes, err := json.Marshal(res)
+func (res *HxResultValue) ToJsonBytes() ([]byte, error) {
+	//jsonDataBytes, err := json.Marshal(res)
+	jsonDataBytes, err := json.MarshalIndent(res, "", " ")
+	//jsonDataBytes, err := res.ToJsonCaseBytes()
 	if err != nil {
 		log.Fatalf("JSON 마샬링 에러: %v", err)
 		return nil, err
 	}
 	return jsonDataBytes, err
+}
+
+func (res *HxResultValue) ToJsonBytesFromCaseingString(s string) ([]byte, error) {
+	casing, _ := GetHxCasingFromString(s)
+	return res.ToJsonBytesFromCaseingType(casing)
+}
+
+func (res *HxResultValue) ToJsonBytesFromCaseingType(casing HxCasing) ([]byte, error) {
+	jsonDataBytes, err := GetJsonWithCasing(res, casing)
+	if err != nil {
+		log.Fatalf("JSON 마샬링 에러: %v", err)
+		return nil, err
+	}
+	return jsonDataBytes, err
+}
+
+func (res *HxResultValue) ToJsonPascalCasingBytes() ([]byte, error) {
+	return GetMarshalIndentWithCasing(res, PascalCase)
+}
+func (res *HxResultValue) ToJsonCamelCasingBytes() ([]byte, error) {
+	return GetMarshalIndentWithCasing(res, CamelCase)
+}
+func (res *HxResultValue) ToJsonSnakeCasingBytes() ([]byte, error) {
+	return GetMarshalIndentWithCasing(res, SnakeCase)
+}
+func (res *HxResultValue) ToJsonCaseBytes() ([]byte, error) {
+	return GetMarshalIndentWithCasing(res, JsonCase)
+}
+func (res *HxResultValue) ToJsonNormalCaseBytes() ([]byte, error) {
+	return GetMarshalIndentWithCasing(res, NormalCase)
 }
 
 /*

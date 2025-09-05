@@ -12,18 +12,18 @@ package HxCore
 type HxString string
 
 // string을 HxString으로 변환하는 함수
-func ConvertStringToHxString(s string) HxString {
+func GetConvertStringToHxString(s string) HxString {
 	// 간단한 타입 캐스팅을 통해 변환
 	return HxString(s)
 }
-func ConvertValueToHxString(value interface{}) HxString {
+func GetConvertValueToHxString(value interface{}) HxString {
 	strValue, isString := value.(string)
 
 	if isString != true {
 		strValue = ""
 	}
 
-	return ConvertStringToHxString(strValue)
+	return GetConvertStringToHxString(strValue)
 }
 
 // HxString을 string으로 변환하는 함수 (메서드 방식)
@@ -36,25 +36,25 @@ func (s HxString) ToString() string {
 }
 func (s HxString) Trim() HxString {
 	var str string = Trim(s.ToString())
-	return ConvertStringToHxString(str)
+	return GetConvertStringToHxString(str)
 }
 func (s HxString) Lower() HxString {
 	var str string = Lower(s.ToString())
-	return ConvertStringToHxString(str)
+	return GetConvertStringToHxString(str)
 }
 func (s HxString) Upper() HxString {
 	var str string = Upper(s.ToString())
-	return ConvertStringToHxString(str)
+	return GetConvertStringToHxString(str)
 }
 func (s HxString) SubStr(start int, end int) HxString {
 	var str string = SubStr(s.ToString(), start, end)
-	return ConvertStringToHxString(str[start:end])
+	return GetConvertStringToHxString(str[start:end])
 }
 func (s HxString) IsRegexpMatch(pattern string) bool {
 	return IsRegexpMatch(pattern, s.ToString())
 }
-func (s HxString) RegexpMatch(pattern string) map[int]string {
-	return RegexpMatch(pattern, s.ToString())
+func (s HxString) ToRegexpMatch(pattern string) map[int]string {
+	return GetRegexpMatch(pattern, s.ToString())
 }
 func (s HxString) ToInt() int {
 	return ConvertStringToInt(s.ToString())
@@ -74,8 +74,8 @@ func (s HxString) ToBool() bool {
 func (s HxString) ToNumber() float64 {
 	return ConvertStringToNumber(s.ToString())
 }
-func (s HxString) ConvertInt64ToCommaString() HxString {
-	return ConvertStringToHxString(ConvertInt64ToCommaString(s.ToInt64()))
+func (s HxString) ToInt64ToCommaString() HxString {
+	return GetConvertStringToHxString(ConvertInt64ToCommaString(s.ToInt64()))
 }
 
 //#endregion HxString

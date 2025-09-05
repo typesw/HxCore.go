@@ -1,15 +1,17 @@
 package HxCore
 
+import "encoding/json"
+
 //#region HxResultType
 
 type HxResultType int
 
 const (
 	None    HxResultType = iota
-	Notice  HxResultType = 1
-	Warning HxResultType = 2
-	Success HxResultType = 3
-	Fail    HxResultType = 4
+	Notice               = 1
+	Warning              = 2
+	Success              = 3
+	Fail                 = 4
 )
 
 func (r HxResultType) String() string {
@@ -42,6 +44,15 @@ func (r HxResultType) String() string {
 		return "Unknown"
 	}
 	return names[r]
+}
+
+func (r HxResultType) MarshalJSON() ([]byte, error) {
+	// 1. String() 메서드를 호출하여 "Success" 같은 문자열을 얻습니다.
+	stringValue := r.String()
+
+	// 2. 이 문자열을 유효한 JSON 문자열(즉, 큰따옴표로 감싸진)로 변환하여 반환합니다.
+	//    json.Marshal 함수에 문자열을 넘기면 알아서 따옴표를 붙여줍니다.
+	return json.Marshal(stringValue)
 }
 
 //#endregion HxResultType
