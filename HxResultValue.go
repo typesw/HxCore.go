@@ -20,7 +20,7 @@ type HxResultValue struct {
 	Remark     string       `json:"Remark"`
 }
 
-func CreateHxResponseResult(resultType HxResultType, value any, message string, remark string) HxResultValue {
+func CreateHxResultValue(resultType HxResultType, value any, message string, remark string) HxResultValue {
 	result := HxResultValue{
 		ResultType: resultType,
 		Value:      value,
