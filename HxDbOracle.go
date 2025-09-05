@@ -2,6 +2,8 @@ package HxCore
 
 import (
 	"context"
+	"errors"
+
 	//"database/sql"
 	"fmt"
 	"log"
@@ -122,10 +124,51 @@ func (h *HxDbOracle) Query(query string, arg map[string]any) (int, error) {
 	h.lastRecords = records
 	h.cursor = -1 // 커서 초기화
 	if h.isDebug {
-		log.Printf("쿼리 실행 완료. %d개의 레코드를 가져왔습니다.", len(h.lastRecords))
+		//log.Printf("쿼리 실행 완료. %d개의 레코드를 가져왔습니다.", len(h.lastRecords))
 	}
 
 	return len(h.lastRecords), nil
+}
+
+func (h *HxDbOracle) QueryData(query string, arg map[string]any, queryWhereString ...string) ([]map[string]any, error) {
+	SQL := query
+	SQL += GetQueryWherString(queryWhereString...)
+	_, err := h.Query(SQL, arg)
+	if err != nil {
+		h.WriteDebugMessage(SQL)
+		return nil, err
+	}
+
+	n, err := h.nf()
+	if err != nil {
+		h.WriteDebugMessage(SQL)
+		return nil, err
+	}
+	if n <= 0 {
+		return nil, errors.New("Data Not Found!")
+	}
+
+	rs, err := h.RecordSet()
+	if err != nil {
+		return nil, err
+	}
+
+	return rs, nil
+	/*
+		for i, rec := range rs {
+			//rec := val.(map[string]interface{})
+			if rec == nil {
+				fmt.Println(" : Not Found Data : " + string(i))
+				continue
+			}
+			if _, found := rec["jno"]; found == false {
+				fmt.Println("Key does not exist : " + string(i))
+			}
+
+		}
+		return nil, errors.New("Data Not Found!")
+	*/
+
 }
 
 // nf (number of fields/rows)는 마지막 쿼리의 레코드 수를 반환합니다.
@@ -142,12 +185,12 @@ func (h *HxDbOracle) RecordCount() (int, error) {
 }
 
 // RecordSet은 저장된 전체 레코드셋을 반환합니다.
-func (h *HxDbOracle) RecordSet() ([]any, error) {
+func (h *HxDbOracle) RecordSet() ([]map[string]any, error) {
 	if h.lastRecords == nil {
 		return nil, fmt.Errorf("먼저 Query를 실행해야 합니다")
 	}
 	// []map[string]any를 []any로 변환
-	resultSet := make([]any, len(h.lastRecords))
+	resultSet := make([]map[string]any, len(h.lastRecords))
 	for i, v := range h.lastRecords {
 		resultSet[i] = v
 	}
@@ -297,4 +340,12 @@ func (h *HxDbOracle) next_id(sequenceName string) (int64, error) {
 // next_id는 NextId 메서드를 호출하는 별칭(alias)입니다.
 func (h *HxDbOracle) NextId(sequenceName string) (int64, error) {
 	return h.next_id(sequenceName)
+}
+
+func (h *HxDbOracle) WriteDebugMessage(str string) {
+
+	if h.isDebug == true {
+		log.Println(str)
+		//fmt.Println(str)
+	}
 }

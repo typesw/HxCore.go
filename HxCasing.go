@@ -1,7 +1,6 @@
 package HxCore
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"reflect"
@@ -235,11 +234,13 @@ func GetJsonWithCasing(data any, casing HxCasing) ([]byte, error) {
 	builder.WriteString("}") // JSON 객체 종료
 
 	// 보기 좋게 Indent 처리 (선택 사항)
-	var prettyJson bytes.Buffer
-	err := json.Indent(&prettyJson, []byte(builder.String()), "", "  ")
-	if err != nil {
-		return nil, err
-	}
+	/*
+		var prettyJson bytes.Buffer
+		err := json.Indent(&prettyJson, []byte(builder.String()), "", "  ")
+		if err != nil {
+			return nil, err
+		return prettyJson.Bytes(), nil
+	*/
 
-	return prettyJson.Bytes(), nil
+	return []byte(builder.String()), nil
 }

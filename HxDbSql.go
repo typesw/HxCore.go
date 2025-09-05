@@ -56,3 +56,14 @@ func Connection(userId string, password string, database any) (*DBConfig, error)
 
 }
 */
+
+func GetQueryWherString(queryWhereString ...string) string {
+	var Result string = ""
+	if len(queryWhereString) > 0 {
+		Result = "\n"
+		for _, v := range queryWhereString {
+			Result += " " + Trim(v)
+		}
+	}
+	return Result
+}

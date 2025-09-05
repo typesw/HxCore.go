@@ -12,12 +12,13 @@ import (
 //#region HxResultValue
 
 type HxResultValue struct {
-	ResultType HxResultType `json:"resultType"`
+	Result     string       `json:"result"`
+	ResultType HxResultType `json:"ResultType"`
 	Value      any          `json:"value"`
-	ValueType  string       `json:"value_type"`
+	ValueType  string       `json:"valueType"`
 	ValueCount int          `json:"ValueCount"`
-	Message    string       `json:"Message"`
-	Remark     string       `json:"Remark"`
+	Message    string       `json:"message"`
+	Remark     string       `json:"remark"`
 }
 
 func CreateHxResultValue(resultType HxResultType, value any, message string, remark string) HxResultValue {
@@ -27,6 +28,7 @@ func CreateHxResultValue(resultType HxResultType, value any, message string, rem
 		Message:    message,
 		Remark:     remark,
 	}
+	result.Result = resultType.String()
 	result.ValueCount = result.CountEx()
 	result.ValueType = result.TypeEx()
 	return result
@@ -184,6 +186,7 @@ func (res *HxResultValue) ToJsonBytesFromCaseingString(s string) ([]byte, error)
 
 func (res *HxResultValue) ToJsonBytesFromCaseingType(casing HxCasing) ([]byte, error) {
 	jsonDataBytes, err := GetJsonWithCasing(res, casing)
+	//jsonDataBytes, err := GetDataByKeyNameWithCasing(res, casing)
 	if err != nil {
 		log.Fatalf("JSON 마샬링 에러: %v", err)
 		return nil, err

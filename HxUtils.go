@@ -2,6 +2,8 @@ package HxCore
 
 import (
 	"fmt"
+	"github.com/godror/godror"
+	//"github.com/shopspring/decimal"
 	"math"
 	"regexp"
 	"strconv"
@@ -246,6 +248,8 @@ func ConvertValueToString(v interface{}) string {
 		return strconv.FormatFloat(n, 'f', -1, 64)
 	case string:
 		return n
+	case godror.Number:
+		return v.(godror.Number).String()
 	default:
 		return ""
 	}
@@ -443,3 +447,110 @@ func ConvertToCommaString(value interface{}) string {
 }
 
 //#endregion 숫자를 컴마가 포함된 문자열로 변환
+
+func GetNowDateOnlyString() string {
+	return time.DateOnly
+}
+func GetNowDateString() string {
+	return time.Now().Format("2006-01-02")
+}
+func GetNowTimeOnlyString() string {
+	return time.Now().Format("15:04:05")
+}
+func GetNowDateTimeString() string {
+	return time.Now().Format("2006-01-02 15:04:05")
+}
+
+// add 함수는 맵, 키, 추가할 값을 받아 알아서 처리해줍니다.
+func SetValueAppendFromMap(m map[string][]any, key string, value interface{}) {
+	// 맵에서 키에 해당하는 슬라이스를 가져옵니다.
+	// 키가 존재하지 않으면, Go는 슬라이스의 제로 값(zero value)인 nil을 반환합니다.
+	// append 함수는 nil 슬라이스에도 안전하게 동작합니다.
+	m[key] = append(m[key], value)
+}
+
+// 슬라이스에서 특정 조건에 맞는 맵을 찾아 값을 설정합니다.
+// findKey, findValue: 찾으려는 맵을 식별하기 위한 조건 (예: "id", 10)
+// setKey, setValue: 추가하거나 수정하려는 키와 값
+// 반환값: 해당 맵을 찾아 수정했는지 여부 (bool)
+func SetValueFindKeyFromMapSlice(slice []map[string]any, findKey string, findValue any, setKey string, setValue any) bool {
+	for _, item := range slice {
+		// 맵 안에 찾는 키가 있고, 그 값이 일치하는지 확인
+		if val, ok := item[findKey]; ok && val == findValue {
+			// 조건을 만족하는 맵을 찾았으면, 새로운 값을 설정
+			item[setKey] = setValue
+			return true // 성공
+		}
+	}
+	return false // 해당 맵을 찾지 못함
+}
+
+/*
+// AddValueToNestedSlice 함수는 중첩된 구조에 안전하게 값을 추가합니다.
+// slice: 전체 데이터 ([])
+// findKey, findValue: 수정할 맵을 찾는 조건 (map)
+// sliceKey: 값을 추가할 대상 슬라이스의 키 (string)
+// valueToAdd: 최종적으로 추가할 값 ([]any)
+func AddValueToNestedSlice(slice []map[string][]any, findKey string, findValue any, sliceKey string, valueToAdd any) bool {
+	if slice == nil || findValue == nil || findKey == "" || sliceKey == "" || valueToAdd == nil || len(slice) == 0 {
+		return false
+	}
+	// 1. 전체 슬라이스를 순회하며 올바른 맵을 찾습니다.
+	for _, itemMap := range slice {
+		if sliceVal, ok := itemMap[findKey]; ok && len(sliceVal) > 0 && sliceVal[0] == findValue {
+
+			// 2. 맵을 찾았으면, append로 하위 슬라이스에 값을 추가합니다.
+			// itemMap[sliceKey]가 nil(없는 경우)이더라도 append는 안전하게 동작하여
+			// 새로운 슬라이스를 만들어줍니다.
+			itemMap[sliceKey] = append(itemMap[sliceKey], valueToAdd)
+			return true // 성공
+		}
+	}
+	return false // 해당 맵을 찾지 못함
+}
+*/
+
+func GetStringJoinFindKeyFromMapSlice(slice []map[string]any, findKey string, sep string) string {
+	Result := ""
+	var names []string
+	for _, item := range slice {
+		if val, ok := item[findKey]; ok {
+			v := ConvertValueToString(val)
+			names = append(names, v)
+			//names = append(names, val.(string))
+		}
+	}
+	Result = strings.Join(names, sep)
+	return Result
+}
+func GetStringJoinFindKey2FromMapSlice(slice []map[string]any, findKey string, sep string) string {
+	Result := ""
+	var names []string
+	for _, item := range slice {
+		if val, ok := item[findKey]; ok {
+			//str := val.(string)
+			//v := val.(decimal.Decimal)
+			//v := val.(godror.Number)
+			v := ConvertValueToString(val)
+			names = append(names, v)
+		}
+	}
+	Result = strings.Join(names, sep)
+	return Result
+}
+func GetStringArrayFindKeyFromMapSlice(slice []map[string]any, findKey string) []string {
+	var names []string
+	for _, item := range slice {
+		if val, ok := item[findKey].(string); ok {
+			names = append(names, val)
+		}
+	}
+	return names
+}
+func GetNumberStringFromDateStr(value string) string {
+	s := value
+	s = strings.ReplaceAll(s, "-", "")
+	s = strings.ReplaceAll(s, "/", "")
+	s = strings.ReplaceAll(s, ".", "")
+	return s
+}

@@ -21,7 +21,7 @@ type IHxDb interface {
 	Close() error
 
 	Query(query string, arg map[string]any) (int, error)
-
+	QueryData(query string, arg map[string]any, queryWhereString ...string) ([]map[string]any, error)
 	/*
 		// Query는 SELECT 문을 실행하고 그 결과를 QueryResult 인터페이스로 반환합니다.
 		// '?'나 '$1' 같은 위치 기반 파라미터를 사용합니다.
@@ -29,7 +29,7 @@ type IHxDb interface {
 	*/
 	nf() (int, error)
 	RecordCount() (int, error)
-	RecordSet() ([]any, error)
+	RecordSet() ([]map[string]any, error)
 
 	next_record() (int, error)
 	NextRecord() (int, error)
