@@ -32,6 +32,10 @@ func CreateHxResultValue(resultType HxResultType, value any, message string, rem
 	return result
 }
 
+func CreateHxResponseResult(resultType HxResultType, value any, message string, remark string) HxResultValue {
+	return CreateHxResultValue(resultType, value, message, remark)
+}
+
 // 옵션 함수의 타입을 정의
 type ResultOption func(*HxResultValue)
 
