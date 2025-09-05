@@ -63,11 +63,11 @@ func (r *HxResultValue) TypeEx() string {
 	// reflect 패키지를 사용해 Value의 실제 타입을 알아냄
 	val := reflect.ValueOf(r.Value)
 
-	return val.Type().Name()
+	return val.Kind().String()
 
 }
 
-func (r HxResultValue) CountEx() int {
+func (r *HxResultValue) CountEx() int {
 	// Value가 nil이면 0을 반환
 	if r.Value == nil {
 		return 0
