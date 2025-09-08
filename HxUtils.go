@@ -2,6 +2,7 @@ package HxCore
 
 import (
 	"fmt"
+
 	"github.com/godror/godror"
 	//"github.com/shopspring/decimal"
 	"math"
@@ -125,9 +126,47 @@ func IsDatetimeUnixInt(value string) bool {
 
 //#endregion 값 & 타입 체크
 
-//#region 타입 변환 헬퍼
+// #region 타입 변환 헬퍼
+func ConvertValueToInt(v interface{}) int {
+	switch n := v.(type) {
+	case int:
+		return n
+	case int8:
+		return int(n)
+	case int16:
+		return int(n)
+	case int32:
+		return int(n)
+	case int64:
+		return int(n)
+	case uint:
+		return int(n)
+	case uint8:
+		return int(n)
+	case uint16:
+		return int(n)
+	case uint32:
+		return int(n)
+	case uint64:
+		return int(n)
+	case string: // 문자열도 숫자로 변환 시도
+		i, _ := strconv.ParseInt(n, 10, 64)
+		return int(i)
+	case godror.Number:
+		s := ConvertValueToString(n)
+		i, _ := strconv.ParseInt(s, 10, 64)
+		return int(i)
+	default:
+		return 0
+	}
+}
 
 func ConvertValueToInt64(v interface{}) int64 {
+
+	if v == nil {
+		return 0
+	}
+
 	switch n := v.(type) {
 	case int:
 		return int64(n)
@@ -151,6 +190,10 @@ func ConvertValueToInt64(v interface{}) int64 {
 		return int64(n)
 	case string: // 문자열도 숫자로 변환 시도
 		i, _ := strconv.ParseInt(n, 10, 64)
+		return i
+	case godror.Number:
+		s := ConvertValueToString(n)
+		i, _ := strconv.ParseInt(s, 10, 64)
 		return i
 	default:
 		return 0
@@ -248,8 +291,16 @@ func ConvertValueToString(v interface{}) string {
 		return strconv.FormatFloat(n, 'f', -1, 64)
 	case string:
 		return n
+	case bool:
+		return strconv.FormatBool(n)
+	case time.Time:
+		return n.Format(time.RFC3339)
 	case godror.Number:
 		return v.(godror.Number).String()
+	case godror.NullTime:
+		return v.(godror.NullTime).Time.Format(time.RFC3339)
+	case godror.Object:
+		return v.(string)
 	default:
 		return ""
 	}
@@ -547,6 +598,60 @@ func GetStringArrayFindKeyFromMapSlice(slice []map[string]any, findKey string) [
 	}
 	return names
 }
+
+// 슬라이스에서 특정 키와 값이 일치하는 맵의 개수를 셉니다.
+func GetCountWithFilter(slice []map[string]any, key string, value any) int {
+	count := 0
+	// 1. 슬라이스의 모든 맵을 순회합니다.
+	for _, item := range slice {
+		// 2. 맵에 해당 키가 있고, 그 값이 원하는 값과 일치하는지 확인합니다.
+		if val, ok := item[key]; ok && val == value {
+			// 3. 조건이 맞으면 카운트를 1 증가시킵니다.
+			count++
+		}
+	}
+	return count
+}
+
+// 슬라이스에서 특정 키를 기준으로 그룹화하여 각 그룹의 개수를 셉니다.
+// data: 원본 데이터 슬라이스 ([]map[string]any)
+// groupByKey: 그룹화의 기준이 될 맵의 키 (string)
+// 반환값: 그룹별 개수를 담은 맵 (map[any]int)
+func GetSelectGroupByCount(slice []map[string]any, groupByKey string) map[any]int {
+	// 1. 결과를 담을 맵을 생성합니다. (키: 그룹 값, 값: 개수)
+	counts := make(map[any]int)
+
+	// 2. 전체 데이터를 순회합니다.
+	for _, item := range slice {
+		// 3. 그룹화할 키가 현재 맵에 존재하는지 확인합니다.
+		if groupValue, ok := item[groupByKey]; ok {
+			// 4. 존재한다면, 해당 값을 키로 사용하여 counts 맵의 값을 1 증가시킵니다.
+			counts[groupValue]++
+		}
+	}
+	return counts
+}
+
+// 상품 슬라이스와 '필터 함수'를 인자로 받습니다.
+// 이 '필터 함수'는 상품 하나를 받아 조건을 만족하면 true를 반환합니다.
+func GetSelectFilter(data []map[string]any, filter func(map[string]any) bool) []map[string]any {
+	/** ex) 외부 호출시 사용 법
+
+	//var val map[string]any
+	tmp := HxCore.GetSelectFilter(data, func(r map[string]any) bool {
+		return r["no"] == val["no"]
+	})
+
+	*/
+	var result []map[string]any
+	for _, p := range data {
+		if filter(p) { // 전달받은 필터 함수로 조건을 검사
+			result = append(result, p)
+		}
+	}
+	return result
+}
+
 func GetNumberStringFromDateStr(value string) string {
 	s := value
 	s = strings.ReplaceAll(s, "-", "")

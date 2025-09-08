@@ -13,22 +13,23 @@ import (
 
 type HxResultValue struct {
 	Result     string       `json:"result"`
-	ResultType HxResultType `json:"ResultType"`
 	Value      any          `json:"value"`
-	ValueType  string       `json:"valueType"`
-	ValueCount int          `json:"ValueCount"`
 	Message    string       `json:"message"`
 	Remark     string       `json:"remark"`
+	ResultType HxResultType `json:"ResultType"`
+	ValueType  string       `json:"ValueType"`
+	ValueCount int          `json:"ValueCount"`
 }
 
 func CreateHxResultValue(resultType HxResultType, value any, message string, remark string) HxResultValue {
 	result := HxResultValue{
+		Result:     resultType.String(),
 		ResultType: resultType,
 		Value:      value,
 		Message:    message,
 		Remark:     remark,
 	}
-	result.Result = resultType.String()
+	//result.Result = resultType.String()
 	result.ValueCount = result.CountEx()
 	result.ValueType = result.TypeEx()
 	return result
