@@ -13,7 +13,7 @@ import (
 
 type HxResultValue struct {
 	Result     string       `json:"result"`
-	Value      any          `json:"value"`
+	Values     any          `json:"values"`
 	Message    string       `json:"message"`
 	Remark     string       `json:"remark"`
 	ResultType HxResultType `json:"ResultType"`
@@ -25,7 +25,7 @@ func CreateHxResultValue(resultType HxResultType, value any, message string, rem
 	result := HxResultValue{
 		Result:     resultType.String(),
 		ResultType: resultType,
-		Value:      value,
+		Values:     value,
 		Message:    message,
 		Remark:     remark,
 	}
@@ -45,7 +45,7 @@ type ResultOption func(*HxResultValue)
 // 각 옵션을 설정하는 ResultOption 타입을 반환
 func WithValue(value any) ResultOption {
 	return func(r *HxResultValue) {
-		r.Value = value
+		r.Values = value
 	}
 }
 
@@ -63,12 +63,12 @@ func WithOptionString(remark string) ResultOption {
 
 func (r *HxResultValue) TypeEx() string {
 	// Value가 nil이면 0을 반환
-	if r.Value == nil {
+	if r.Values == nil {
 		return ""
 	}
 
 	// reflect 패키지를 사용해 Value의 실제 타입을 알아냄
-	val := reflect.ValueOf(r.Value)
+	val := reflect.ValueOf(r.Values)
 	Result := val.Kind().String()
 	switch Result {
 	case "slice":
@@ -80,12 +80,12 @@ func (r *HxResultValue) TypeEx() string {
 
 func (r *HxResultValue) CountEx() int {
 	// Value가 nil이면 0을 반환
-	if r.Value == nil {
+	if r.Values == nil {
 		return 0
 	}
 
 	// reflect 패키지를 사용해 Value의 실제 타입을 알아냄
-	val := reflect.ValueOf(r.Value)
+	val := reflect.ValueOf(r.Values)
 
 	// 타입에 따라 길이를 반환
 	switch val.Kind() {
@@ -124,7 +124,7 @@ func CreateResponseResult(resultType HxResultType, resultValue any, resultMessag
 
 	Result := HxResultValue{
 		ResultType: resultType,
-		Value:      resultValue,
+		Values:      resultValue,
 		ValueCount: -1,
 		Message:    resultMessage,
 		Remark:     resultRemark,
